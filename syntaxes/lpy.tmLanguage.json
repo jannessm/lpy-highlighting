@@ -1,0 +1,121 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "lpy",
+	"patterns": [
+		{
+			"include": "#statement"
+		},
+		{
+			"include": "source.python"
+		}
+	],
+	"repository": {
+		"statement": {
+			"patterns": [
+				{
+					"include": "#module"
+				},
+				{
+					"include": "#axiom"
+				},
+				{
+					"include": "#int-variable"
+				},
+				{
+					"include": "#rules-block"
+				},
+				{
+					"include": "#multiline-production"
+				}
+			]
+		},
+		"module": {
+			"name": "meta.module.lpy",
+			"match": "\\b(module)\\b\\s*(\\w+)",
+			"captures": {
+				"1": {
+					"name": "keyword.control.module.lpy"
+				},
+				"2": {
+					"name": "variable.other.module.lpy"
+				}
+			}
+		},
+		"axiom": {
+			"name": "meta.axiom.lpy",
+			"match": "\\b(Axiom)\\b\\s*:\\s*(.*)",
+			"captures": {
+				"1": {
+					"name": "keyword.control.axiom.lpy"
+				},
+				"2": {
+					"name": "meta.lstring.lpy",
+					"patterns": [
+						{
+							"include": "#lstring"
+						}
+					]
+				}
+			},
+			"patterns": [{
+				"include": "#lstring"
+			}]
+		},
+		"int-variable": {
+			"name": "meta.derivation-length.lpy",
+			"match": "\\b(derivation length|maximum depth|group)\\b\\s*:\\s*(.*)",
+			"captures": {
+				"1": {
+					"name": "keyword.control.derivation-length.lpy"
+				},
+				"2": {
+					"name": "meta.numeric.integer.lpy",
+					"patterns": [
+						{
+							"name": "invalid.illegal.derivation-length.lpy",
+							"match": "\\d+[^\\d]+[^\\s]*"
+						},
+						{
+							"include": "source.python"
+						}
+					]
+				}
+			}
+		},
+		"rules-block": {
+			"name": "meta.rules-block.lpy",
+			"match": "\\b(production|homomorphism|decomposition)\\b\\s*:",
+			"captures": {
+				"1": {
+					"name": "entity.name.type.rules-block.lpy"
+				}
+			}
+		},
+		"multiline-production": {
+			"name": "meta.production.multiline.lpy",
+			"patterns": [
+				{
+					"match": "\\b([a-zA-Z][\\w_]+)\\b\\s*:\\s*(.*)",
+					"captures": {
+						"1": {
+							"name": "entity.name.function.production.lpy"
+						},
+						"2": {
+
+						}
+					}
+				},
+				{
+					"begin": "\\b([a-zA-Z][\\w_]+)\\b",
+					"end": ":",
+					"captures": {
+						"1": {
+							"name": "entity.name.function.production.lpy"
+						}
+					}
+				}
+			]
+		}
+	},
+	"scopeName": "source.lpy"
+}

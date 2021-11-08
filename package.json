@@ -1,0 +1,28 @@
+{
+    "name": "lpy",
+    "displayName": "lpy",
+    "description": "Syntax highlighting for l-py python language",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.62.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "lpy",
+            "aliases": ["lpy", "l-py"],
+            "extensions": [".lpy"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "lpy",
+            "scopeName": "source.lpy",
+            "path": "./syntaxes/lpy.tmLanguage.json",
+            "embeddedLanguages": {
+                "source.python": "python"
+            }
+        }]
+    }
+}
