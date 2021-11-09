@@ -13,6 +13,16 @@
 		"statement": {
 			"patterns": [
 				{
+					"name": "keyword.control.flow.lpy",
+					"match": "(?x)\n  \\b(?<!\\.)(\n    async | continue | del | assert | break | finally | for\n    | from | elif | else | if | except | pass | raise\n    | return | try | while | with\n  )\\b\n"
+				},
+				{
+					"include": "#produce"
+				},
+				{
+					"include": "#end"
+				},
+				{
 					"include": "#module"
 				},
 				{
@@ -25,12 +35,15 @@
 					"include": "#rules-block"
 				},
 				{
-					"include": "#multiline-production"
+					"include": "#production"
+				},
+				{
+					"include": "#rule"
 				}
 			]
 		},
 		"module": {
-			"name": "meta.module.lpy",
+			"name": "meta.module.lpy ",
 			"match": "\\b(module)\\b\\s*(\\w+)",
 			"captures": {
 				"1": {
@@ -91,30 +104,256 @@
 				}
 			}
 		},
-		"multiline-production": {
-			"name": "meta.production.multiline.lpy",
+		"production": {
+			"begin": "\\b([a-zA-Z][\\w_]*)\\s*(?=(:|\\s*\\())",
+			"end": ":|(?=[#'\"\\n])",
+			"beginCaptures": {
+				"1": {
+					"name": "entity.name.function.production.lpy"
+				}
+			},
 			"patterns": [
 				{
-					"match": "\\b([a-zA-Z][\\w_]+)\\b\\s*:\\s*(.*)",
+					"include": "#parameters"
+				}
+			]
+		},
+		"rule": {
+			"match": "(.*)(-->)(.*)",
+			"captures": {
+				"1": {
+					"name": "meta.lstring.lpy",
+					"patterns": [
+						{
+							"include": "#lstring"
+						}
+					]
+				},
+				"2": {
+					"name": "keyword.control.transition.lpy"
+				},
+				"3": {
+					"patterns": [
+						{
+							"name": "meta.lstring.lpy",
+							"include": "#lstring"
+						}
+					]
+				}
+			}
+		},
+		"parameters": {
+			"name": "meta.production.parameters.lpy",
+			"begin": "\\(",
+			"end": "\\)",
+			"patterns": [
+				{
+					"match": "([a-zA-Z_]\\w*)",
 					"captures": {
 						"1": {
-							"name": "entity.name.function.production.lpy"
-						},
-						"2": {
-
+							"name": "entity.other.attribute-name"
 						}
 					}
 				},
 				{
-					"begin": "\\b([a-zA-Z][\\w_]+)\\b",
-					"end": ":",
-					"captures": {
-						"1": {
-							"name": "entity.name.function.production.lpy"
-						}
-					}
+					"include": "#comments"
 				}
 			]
+		},
+		"produce": {
+			"begin": "(n?produce) ",
+			"end": "\n",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.flow.produce.lpy"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#lstring"
+				}
+			]
+		},
+		"lstring": {
+			"name": "constant.language",
+			"patterns": [
+				{
+					"include": "#functions"
+				},
+				{
+					"include": "#primitives"
+				}
+			]
+		},
+		"primitives": {
+			"match": "(F|f|@O|@o|@B|@b|_|!|;|,|\\[|\\]|~l?|\\.|Frame|\/|\\|^|&|\\+|\\-|@Gc|StartGC|@Ge|EndGC|{|})",
+			"name": "constant.language.lstring.primitive.lpy"
+		},
+		"functions": {
+			"match": "(SetColor|F|f|@O|@o|@B|@b|_|!|;|,|@L|Frame|\/|\\|^|&|\\+|\\-|SetScale|DivScale|MultScale|@D|@Dd|@Di|MoveTo|@M|MoveRel|Pinpoint|PinpointRel|@R|setHead|EulerAngles|nF|LineTo|OLineTo|LineRel|OLineRel|SetGuide)\\((.*)\\)",
+			"captures": {
+				"1": {
+					"name": "constant.language.lstring.primitive.lpy"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "#number"
+						}
+					]
+				}
+			}
+		},
+		"end": {
+			"name": "keyword.control.flow.end.lpy",
+			"match": "(endgroup|endlsystem)"
+		},
+		"number": {
+			"name": "constant.numeric.python",
+			"patterns": [
+				{
+					"include": "#number-float"
+				},
+				{
+					"include": "#number-dec"
+				},
+				{
+					"include": "#number-hex"
+				},
+				{
+					"include": "#number-oct"
+				},
+				{
+					"include": "#number-bin"
+				},
+				{
+					"include": "#number-long"
+				},
+				{
+					"name": "invalid.illegal.name.python",
+					"match": "\\b[0-9]+\\w+"
+				}
+			]
+		},
+		"number-float": {
+			"name": "constant.numeric.float.python",
+			"match": "(?x)\n  (?<! \\w)(?:\n    (?:\n      \\.[0-9](?: _?[0-9] )*\n      |\n      [0-9](?: _?[0-9] )* \\. [0-9](?: _?[0-9] )*\n      |\n      [0-9](?: _?[0-9] )* \\.\n    ) (?: [eE][+-]?[0-9](?: _?[0-9] )* )?\n    |\n    [0-9](?: _?[0-9] )* (?: [eE][+-]?[0-9](?: _?[0-9] )* )\n  )([jJ])?\\b\n",
+			"captures": {
+				"1": {
+					"name": "storage.type.imaginary.number.python"
+				}
+			}
+		},
+		"number-dec": {
+			"name": "constant.numeric.dec.python",
+			"match": "(?x)\n  (?<![\\w\\.])(?:\n      [1-9](?: _?[0-9] )*\n      |\n      0+\n      |\n      [0-9](?: _?[0-9] )* ([jJ])\n      |\n      0 ([0-9]+)(?![eE\\.])\n  )\\b\n",
+			"captures": {
+				"1": {
+					"name": "storage.type.imaginary.number.python"
+				},
+				"2": {
+					"name": "invalid.illegal.dec.python"
+				}
+			}
+		},
+		"number-hex": {
+			"name": "constant.numeric.hex.python",
+			"match": "(?x)\n  (?<![\\w\\.])\n    (0[xX]) (_?[0-9a-fA-F])+\n  \\b\n",
+			"captures": {
+				"1": {
+					"name": "storage.type.number.python"
+				}
+			}
+		},
+		"number-oct": {
+			"name": "constant.numeric.oct.python",
+			"match": "(?x)\n  (?<![\\w\\.])\n    (0[oO]) (_?[0-7])+\n  \\b\n",
+			"captures": {
+				"1": {
+					"name": "storage.type.number.python"
+				}
+			}
+		},
+		"number-bin": {
+			"name": "constant.numeric.bin.python",
+			"match": "(?x)\n  (?<![\\w\\.])\n    (0[bB]) (_?[01])+\n  \\b\n",
+			"captures": {
+				"1": {
+					"name": "storage.type.number.python"
+				}
+			}
+		},
+		"number-long": {
+			"name": "constant.numeric.bin.python",
+			"comment": "this is to support python2 syntax for long ints",
+			"match": "(?x)\n  (?<![\\w\\.])\n    ([1-9][0-9]* | 0) ([lL])\n  \\b\n",
+			"captures": {
+				"2": {
+					"name": "storage.type.number.python"
+				}
+			}
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.number-sign.python",
+					"contentName": "meta.typehint.comment.python",
+					"begin": "(?x)\n  (?:\n    \\# \\s* (type:)\n    \\s*+ (?# we want `\\s*+` which is possessive quantifier since\n             we do not actually want to backtrack when matching\n             whitespace here)\n    (?! $ | \\#)\n  )\n",
+					"end": "(?:$|(?=\\#))",
+					"beginCaptures": {
+						"0": {
+							"name": "meta.typehint.comment.python"
+						},
+						"1": {
+							"name": "comment.typehint.directive.notation.python"
+						}
+					},
+					"patterns": [
+						{
+							"name": "comment.typehint.ignore.notation.python",
+							"match": "(?x)\n  \\G ignore\n  (?= \\s* (?: $ | \\#))\n"
+						},
+						{
+							"name": "comment.typehint.type.notation.python",
+							"match": "(?x)\n  (?<!\\.)\\b(\n    bool | bytes | float | int | object | str\n    | List | Dict | Iterable | Sequence | Set\n    | FrozenSet | Callable | Union | Tuple\n    | Any | None\n  )\\b\n"
+						},
+						{
+							"name": "comment.typehint.punctuation.notation.python",
+							"match": "([\\[\\]\\(\\),\\.\\=\\*]|(->))"
+						},
+						{
+							"name": "comment.typehint.variable.notation.python",
+							"match": "([[:alpha:]_]\\w*)"
+						}
+					]
+				},
+				{
+					"include": "#comments-base"
+				}
+			]
+		},
+		"comments-base": {
+			"name": "comment.line.number-sign.python",
+			"begin": "(\\#)",
+			"beginCaptures": {
+				"1": {
+					"name": "punctuation.definition.comment.python"
+				}
+			},
+			"end": "($)",
+			"patterns": [
+				{
+					"include": "#codetags"
+				}
+			]
+		},
+		"codetags": {
+			"match": "(?:\\b(NOTE|XXX|HACK|FIXME|BUG|TODO)\\b)",
+			"captures": {
+				"1": {
+					"name": "keyword.codetag.notation.python"
+				}
+			}
 		}
 	},
 	"scopeName": "source.lpy"
