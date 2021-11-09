@@ -7,6 +7,7 @@
         "email": "j-magnusson@t-online.de",
         "name": "Jannes Magnusson"
     },
+    "publisher": "jannessm",
     "license": "MIT",
     "repository": {
         "url": "https://github.com/jannessm/lpy-highlighting"
