@@ -2,7 +2,7 @@
     "name": "lpy",
     "displayName": "lpy",
     "description": "Syntax highlighting for l-py python language",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": {
         "email": "j-magnusson@t-online.de",
         "name": "Jannes Magnusson"
@@ -13,7 +13,7 @@
         "url": "https://github.com/jannessm/lpy-highlighting"
     },
     "engines": {
-        "vscode": "^1.62.0"
+        "vscode": "^1.60.0"
     },
     "categories": [
         "Programming Languages"
